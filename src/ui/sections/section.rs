@@ -7,7 +7,7 @@ pub trait Section {
 
     fn create() -> Dialog;
 
-    fn update(siv: &mut Cursive) {
+    fn update(_siv: &mut Cursive) {
         panic!("Trying to update section with no update method.");
     }
 }

@@ -31,7 +31,7 @@ impl Section for SectionPinPositions {
                     }))
                     .child(
                         LinearLayout::vertical()
-                            .child(TextView::new(" Plate Order as in game (1 = bottom)"))
+                            .child(TextView::new(" Plate order as in-game (1 = bottom)"))
                             .child(
                                 TextView::new(" Changing this resets pin positions.").style(Dim),
                             ),
