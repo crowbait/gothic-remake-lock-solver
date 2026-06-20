@@ -80,7 +80,7 @@ pub fn create_layout(siv: &mut Cursive) {
                             )
                             .child(DummyView.fixed_height(1))
                             .child(
-                                TextView::new("CC-BY-NC-ND-4.0    Ⓒ Traxx 🦊")
+                                TextView::new("CC BY-NC-ND-4.0    Ⓒ Traxx 🦊")
                                     .h_align(HAlign::Right)
                                     .style(Dim),
                             ),
