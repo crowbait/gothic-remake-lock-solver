@@ -5,11 +5,6 @@
 > This means you can share this program, provided you state where you got it from (attribution). You cannot distribute
 > modified copies of this program or use this program or parts of it for commercial purposes.
 
-<br /><br />
-<div align="center">
-    <img src="screenshot-tui.png" width="75%" />
-</div>
-
 > [!IMPORTANT]
 > **Yes**, it is a command line application.
 > **No**, you don't have to be a tech-wizard to use it.
@@ -17,7 +12,11 @@
 >
 > A version with graphical user interface is being worked on.
 
-<br />
+<br /><br />
+<div align="center">
+    <img src="screenshot-tui.png" width="75%" />
+</div>
+
 <br />
 
 ## Content
