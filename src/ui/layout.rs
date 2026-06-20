@@ -1,8 +1,10 @@
+use crate::data::AppState;
 use crate::ui::sections::section::Section;
 use crate::ui::sections::section_pin_positions::SectionPinPositions;
 use crate::ui::sections::section_plate_count::SectionPlateCount;
 use crate::ui::sections::section_plate_links::SectionPlateLinks;
 use crate::ui::sections::section_solution::SectionSolution;
+use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::align::HAlign::Center;
 use cursive::style::Effect::Dim;
@@ -10,13 +12,15 @@ use cursive::style::Style;
 use cursive::utils::markup::StyledString;
 use cursive::view::{Resizable, Scrollable};
 use cursive::views::{Button, DummyView, LinearLayout, TextView};
-use cursive::Cursive;
-
 
 pub fn create_layout(siv: &mut Cursive) {
     let mut title = StyledString::new();
     title.append_plain("---   GOTHIC REMAKE LOCK SOLVER   ---   ");
     title.append_styled(format!("v{}", env!("CARGO_PKG_VERSION")), Style::from(Dim));
+
+    let state = siv
+        .with_user_data(|app_state: &mut AppState| app_state.clone())
+        .unwrap();
 
     siv.add_fullscreen_layer(
         LinearLayout::vertical()
@@ -31,20 +35,20 @@ pub fn create_layout(siv: &mut Cursive) {
                     .child(
                         LinearLayout::vertical()
                             // number of plates
-                            .child(SectionPlateCount::create())
+                            .child(SectionPlateCount::create(&state))
                             .child(DummyView.fixed_height(2))
                             // pin positions
-                            .child(SectionPinPositions::create())
+                            .child(SectionPinPositions::create(&state))
                             .child(DummyView.fixed_height(2))
                             // plate links
-                            .child(SectionPlateLinks::create())
+                            .child(SectionPlateLinks::create(&state))
                             // input layout
                             .fixed_width(56)
                             .scrollable(),
                     )
                     .child(DummyView.fixed_width(3))
                     // solution
-                    .child(SectionSolution::create().fixed_width(32))
+                    .child(SectionSolution::create(&state).fixed_width(32))
                     .full_height(),
             )
             .child(DummyView.fixed_height(1))
@@ -76,7 +80,7 @@ pub fn create_layout(siv: &mut Cursive) {
                             )
                             .child(DummyView.fixed_height(1))
                             .child(
-                                TextView::new("CC-BY-NC-4.0       Ⓒ Traxx 🦊")
+                                TextView::new("CC-BY-NC-ND-4.0    Ⓒ Traxx 🦊")
                                     .h_align(HAlign::Right)
                                     .style(Dim),
                             ),

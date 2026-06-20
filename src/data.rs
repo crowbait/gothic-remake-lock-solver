@@ -1,5 +1,5 @@
+use crate::solver::Move;
 use cursive::reexports::enumset::__internal::EnumSetTypeRepr;
-
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum LinkState {
@@ -28,5 +28,18 @@ impl LockData {
 #[derive(Clone, Debug)]
 pub struct AppState {
     pub lock: LockData,
+    pub solution: Option<Vec<Move>>,
     pub plate_order_as_in_game: bool,
+    pub group_steps: bool,
+}
+
+impl AppState {
+    pub fn default() -> Self {
+        AppState {
+            lock: LockData::from_num_plates(&4),
+            solution: None,
+            plate_order_as_in_game: true,
+            group_steps: true,
+        }
+    }
 }

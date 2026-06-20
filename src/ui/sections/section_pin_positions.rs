@@ -1,18 +1,16 @@
 use crate::data::{AppState, LockData};
 use crate::ui;
 use crate::ui::sections::section::Section;
+use cursive::Cursive;
 use cursive::reexports::enumset::__internal::EnumSetTypeRepr;
 use cursive::style::Effect::Dim;
 use cursive::view::{Nameable, Resizable};
 use cursive::views::{Checkbox, Dialog, DummyView, LinearLayout, RadioGroup, TextView};
-use cursive::Cursive;
-
 
 pub struct SectionPinPositions {}
 impl Section for SectionPinPositions {
     const NAME: &'static str = "section_pin_positions";
-
-    fn create() -> Dialog {
+    fn create(app_state: &AppState) -> Dialog {
         let rows = LinearLayout::vertical().with_name(Self::NAME);
 
         let mut header = LinearLayout::horizontal().child(TextView::new("          1"));
@@ -20,22 +18,23 @@ impl Section for SectionPinPositions {
             header.add_child(TextView::new(format!("    {}", slot)));
         }
 
+        let mut chk_plate_order = Checkbox::new().on_change(|siv, checked| {
+            siv.with_user_data(|app_state: &mut AppState| {
+                app_state.plate_order_as_in_game = checked;
+            });
+            Self::update(siv);
+        });
+        if app_state.plate_order_as_in_game {
+            chk_plate_order.check();
+        }
+
         let section = LinearLayout::vertical()
             .child(
-                LinearLayout::horizontal()
-                    .child(Checkbox::new().checked().on_change(|siv, checked| {
-                        siv.with_user_data(|app_state: &mut AppState| {
-                            app_state.plate_order_as_in_game = checked;
-                        });
-                        Self::update(siv);
-                    }))
-                    .child(
-                        LinearLayout::vertical()
-                            .child(TextView::new(" Plate order as in-game (1 = bottom)"))
-                            .child(
-                                TextView::new(" Changing this resets pin positions.").style(Dim),
-                            ),
-                    ),
+                LinearLayout::horizontal().child(chk_plate_order).child(
+                    LinearLayout::vertical()
+                        .child(TextView::new(" Plate order as in-game (1 = bottom)"))
+                        .child(TextView::new(" Changing this resets pin positions.").style(Dim)),
+                ),
             )
             .child(DummyView.fixed_height(1))
             .child(header)

@@ -1,17 +1,15 @@
 use crate::data::{AppState, LinkState, LockData};
 use crate::ui;
 use crate::ui::sections::section::Section;
+use cursive::Cursive;
 use cursive::reexports::enumset::__internal::EnumSetTypeRepr;
 use cursive::view::Nameable;
 use cursive::views::{Dialog, LinearLayout, RadioGroup, TextView};
-use cursive::Cursive;
-
 
 pub struct SectionPlateLinks {}
 impl Section for SectionPlateLinks {
     const NAME: &'static str = "section_plate_links";
-
-    fn create() -> Dialog {
+    fn create(_app_state: &AppState) -> Dialog {
         let plates = LinearLayout::vertical().with_name(Self::NAME);
 
         let section = LinearLayout::vertical()

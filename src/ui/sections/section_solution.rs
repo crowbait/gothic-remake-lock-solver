@@ -1,19 +1,35 @@
 use crate::data::AppState;
-use crate::solver::{solve, Move};
+use crate::solver::{Move, solve};
 use crate::ui;
 use crate::ui::sections::section::Section;
-use cursive::view::{Nameable, Scrollable};
-use cursive::views::{Dialog, TextView};
 use cursive::Cursive;
-
+use cursive::view::{Nameable, Resizable, Scrollable};
+use cursive::views::{Checkbox, Dialog, DummyView, LinearLayout, TextView};
 
 pub struct SectionSolution {}
 impl Section for SectionSolution {
     const NAME: &'static str = "section_solution";
+    fn create(app_state: &AppState) -> Dialog {
+        let mut chk_group_steps = Checkbox::new().on_change(|siv, checked| {
+            siv.with_user_data(|app_state: &mut AppState| {
+                app_state.group_steps = checked;
+            });
+            Self::update_display(siv);
+        });
 
-    fn create() -> Dialog {
+        if app_state.group_steps {
+            chk_group_steps.check();
+        }
+
         ui::util::wrap_section(
-            TextView::empty().with_name(Self::NAME).scrollable(),
+            LinearLayout::vertical()
+                .child(
+                    LinearLayout::horizontal()
+                        .child(chk_group_steps)
+                        .child(TextView::new(" Group identical")),
+                )
+                .child(DummyView.fixed_height(1))
+                .child(TextView::empty().with_name(Self::NAME).scrollable()),
             "Solution",
         )
     }
@@ -24,9 +40,26 @@ impl Section for SectionSolution {
             .with_user_data(|app_state: &mut AppState| app_state.lock.clone())
             .unwrap();
 
+        let solution = solve(&lock_data);
+        siv.with_user_data(|app_state: &mut AppState| {
+            app_state.solution = solution;
+        });
+
+        Self::update_display(siv);
+    }
+}
+
+impl SectionSolution {
+    fn update_display(siv: &mut Cursive) {
+        let (solution, group_steps) = siv
+            .with_user_data(|app_state: &mut AppState| {
+                (app_state.solution.clone(), app_state.group_steps)
+            })
+            .unwrap();
+
         let mut result_str = String::new();
 
-        if let Some(mvs) = solve(&lock_data) {
+        if let Some(mvs) = solution {
             result_str.push_str(&format!("Solution: {} moves\n\n", mvs.len()));
 
             // group moves into "streaks" of consecutive moves
@@ -37,6 +70,12 @@ impl Section for SectionSolution {
             // This actually evaluates the "last" ("current") move (the one before the current loop iteration), by comparing
             // the "last" move to the "new" one. It only writes the new one to be "current" at the end of the iteration.
             for mv in mvs {
+                if !group_steps {
+                    Self::append_move(&mv, &mut result_str, streak_start_step, 1);
+                    streak_start_step += 1;
+                    continue;
+                }
+
                 match &current {
                     // Some picks only on first move, if guard (as it is not within a `=> {}` block) additionally
                     // makes this branch only execute if the move is the same as the last.
@@ -48,7 +87,12 @@ impl Section for SectionSolution {
                         // `take()` takes the value out of an option; leaves `None` behind
                         // runs only after first iteration = "current" is already set
                         if let Some(cur) = current.take() {
-                            append_move(&cur, &mut result_str, streak_start_step, streak_count);
+                            Self::append_move(
+                                &cur,
+                                &mut result_str,
+                                streak_start_step,
+                                streak_count,
+                            );
                         }
 
                         streak_start_step += streak_count;
@@ -60,7 +104,7 @@ impl Section for SectionSolution {
 
             // last move is not evaluated in loop, append it
             if let Some(cur) = current {
-                append_move(&cur, &mut result_str, streak_start_step, streak_count);
+                Self::append_move(&cur, &mut result_str, streak_start_step, streak_count);
             }
 
         // no solution found
@@ -73,35 +117,33 @@ impl Section for SectionSolution {
             section.set_content(result_str);
         });
     }
-}
+    fn append_move(mv: &Move, result_str: &mut String, streak_start_step: i32, streak_count: i32) {
+        result_str.push_str(&format!(
+            "#{:>2}   Plate {}: {}",
+            streak_start_step,
+            mv.plate + 1,
+            mv.direction.to_str()
+        ));
 
-fn append_move(mv: &Move, result_str: &mut String, streak_start_step: i32, streak_count: i32) {
-    result_str.push_str(&format!(
-        "#{:>2}   Plate {}: {}",
-        streak_start_step,
-        mv.plate + 1,
-        mv.direction.to_str()
-    ));
+        if streak_count > 1 {
+            result_str.push_str(&format!("    x{}", streak_count));
+        }
 
-    if streak_count > 1 {
-        result_str.push_str(&format!("    x{}", streak_count));
-    }
-
-    if lines_since_last_empty(result_str) == 4 {
+        if Self::lines_since_last_empty(result_str) == 4 {
+            result_str.push('\n');
+        }
         result_str.push('\n');
     }
-    result_str.push('\n');
-}
+    fn lines_since_last_empty(input: &str) -> usize {
+        let mut count = 0;
 
-fn lines_since_last_empty(input: &str) -> usize {
-    let mut count = 0;
-
-    for line in input.lines().rev() {
-        if line.is_empty() {
-            break;
+        for line in input.lines().rev() {
+            if line.is_empty() {
+                break;
+            }
+            count += 1;
         }
-        count += 1;
-    }
 
-    count
+        count
+    }
 }

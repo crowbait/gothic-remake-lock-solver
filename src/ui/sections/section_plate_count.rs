@@ -3,16 +3,14 @@ use crate::ui;
 use crate::ui::sections::section::Section;
 use crate::ui::sections::section_pin_positions::SectionPinPositions;
 use crate::ui::sections::section_plate_links::SectionPlateLinks;
+use cursive::Cursive;
 use cursive::view::Nameable;
 use cursive::views::{Dialog, LinearLayout, RadioGroup, TextView};
-use cursive::Cursive;
-
 
 pub struct SectionPlateCount {}
 impl Section for SectionPlateCount {
     const NAME: &'static str = "section_plate_count";
-
-    fn create() -> Dialog {
+    fn create(app_state: &AppState) -> Dialog {
         let mut group = RadioGroup::<u8>::new();
         let mut group_layout = LinearLayout::horizontal();
 
@@ -22,7 +20,12 @@ impl Section for SectionPlateCount {
             } else {
                 format!("{}", 4 + i)
             };
-            group_layout.add_child(group.button(4 + i, lbl));
+
+            let mut button = group.button(4 + i, lbl);
+            if 4 + i == app_state.lock.num_plates {
+                button.select();
+            }
+            group_layout.add_child(button);
         }
 
         group.set_on_change(|siv: &mut Cursive, v: &u8| {
