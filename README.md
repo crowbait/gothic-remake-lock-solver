@@ -1,12 +1,13 @@
 # Gothic 1 Remake Lock Solver
 
-> [!INFO]
-> This work is licensed under [*CC BY-NC-ND 4.0*](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+> [!NOTE]
+> This work is licensed under [*CC BY-NC-ND 4.0*](https://creativecommons.org/licenses/by-nc-nd/4.0/).<br />
 > This means you can share this program, provided you state where you got it from (attribution). You cannot distribute
 > modified copies of this program or use this program or parts of it for commercial purposes.
 
+<br /><br />
 <div align="center">
-    <img src="screenshot-tui.png" width="90%" />
+    <img src="screenshot-tui.png" width="75%" />
 </div>
 
 > [!IMPORTANT]
@@ -15,6 +16,9 @@
 > **You can simply use your mouse to use this application.**
 >
 > A version with graphical user interface is being worked on.
+
+<br />
+<br />
 
 ## Content
 
@@ -27,15 +31,15 @@ No installation is required. Simply grab your exe from the
 [release page](https://github.com/crowbait/gothic-remake-lock-solver/releases) and run it.
 
 > [!WARNING]
-> This application works best in the "new" *Windows Terminal*.
-> Windows 11 users don't need to do anything.
+> This application works best in the "new" *Windows Terminal*.<br />
+> Windows 11 users don't need to do anything.<br />
 > *However*, if you are still on Windows 10, you should install and use the official
 > *Windows Terminal*, following [the instructions](https://learn.microsoft.com/en-us/windows/terminal/install). You only
 > need to do the first 2 steps, "install" and "setting default".
 
 ## Usage
 
-> [!INFO]
+> [!NOTE]
 > To scroll using the mouse wheel, place your curser *on the scrollbar*.
 
 1. Select the number of plates the lock has. *Changing this later will reset all other inputs.*
