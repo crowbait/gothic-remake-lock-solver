@@ -1,5 +1,6 @@
+mod auto_update;
+mod common;
 mod data;
-mod solver;
 mod ui;
 
 use crate::data::AppState;

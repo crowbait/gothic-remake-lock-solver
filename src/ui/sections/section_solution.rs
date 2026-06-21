@@ -1,5 +1,5 @@
+use crate::common::solver::{Move, solve};
 use crate::data::AppState;
-use crate::solver::{Move, solve};
 use crate::ui;
 use crate::ui::sections::section::Section;
 use cursive::Cursive;
@@ -117,6 +117,7 @@ impl SectionSolution {
             section.set_content(result_str);
         });
     }
+
     fn append_move(mv: &Move, result_str: &mut String, streak_start_step: i32, streak_count: i32) {
         result_str.push_str(&format!(
             "#{:>2}   Plate {}: {}",
@@ -126,7 +127,7 @@ impl SectionSolution {
         ));
 
         if streak_count > 1 {
-            result_str.push_str(&format!("    x{}", streak_count));
+            result_str.push_str(&format!("   x{}", streak_count));
         }
 
         if Self::lines_since_last_empty(result_str) == 4 {

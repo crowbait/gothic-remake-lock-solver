@@ -1,4 +1,4 @@
-use crate::solver::Move;
+use crate::common::solver::Move;
 use cursive::reexports::enumset::__internal::EnumSetTypeRepr;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

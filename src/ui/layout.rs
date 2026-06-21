@@ -1,3 +1,4 @@
+use crate::auto_update::AvailableUpdate;
 use crate::data::AppState;
 use crate::ui::sections::section::Section;
 use crate::ui::sections::section_pin_positions::SectionPinPositions;
@@ -7,16 +8,41 @@ use crate::ui::sections::section_solution::SectionSolution;
 use cursive::Cursive;
 use cursive::align::HAlign;
 use cursive::align::HAlign::Center;
-use cursive::style::Effect::Dim;
+use cursive::style::BaseColor::Yellow;
+use cursive::style::Effect::{Bold, Dim};
 use cursive::style::Style;
 use cursive::utils::markup::StyledString;
 use cursive::view::{Resizable, Scrollable};
 use cursive::views::{Button, DummyView, LinearLayout, TextView};
 
-pub fn create_layout(siv: &mut Cursive) {
+pub fn create_layout(siv: &mut Cursive, update: &Option<AvailableUpdate>) {
     let mut title = StyledString::new();
     title.append_plain("---   GOTHIC REMAKE LOCK SOLVER   ---   ");
     title.append_styled(format!("v{}", env!("CARGO_PKG_VERSION")), Style::from(Dim));
+
+    let mut update_note = LinearLayout::vertical();
+    if let Some(update) = update {
+        let mut update_note_row1 = LinearLayout::horizontal();
+        let mut update_str = StyledString::new();
+        update_str.append_plain("     Update available: ");
+        update_str.append_styled(
+            update.version_info.to_string(),
+            Style::from(Yellow.dark()).combine(Bold),
+        );
+        update_note_row1.add_child(TextView::new(update_str));
+
+        let mut update_note_row2 = LinearLayout::horizontal();
+        update_note_row2.add_child(TextView::new("     Click to download: "));
+
+        let u = update.clone();
+        update_note_row2.add_child(Button::new("GitHub", move |_| {
+            open::that(&u.release_page_url).ok();
+        }));
+
+        update_note.add_child(update_note_row1);
+        update_note.add_child(update_note_row2);
+        update_note.add_child(DummyView.fixed_height(1));
+    }
 
     let state = siv
         .with_user_data(|app_state: &mut AppState| app_state.clone())
@@ -26,7 +52,8 @@ pub fn create_layout(siv: &mut Cursive) {
         LinearLayout::vertical()
             .child(DummyView.fixed_height(1))
             .child(TextView::new(title).h_align(Center))
-            .child(DummyView.fixed_height(2))
+            .child(DummyView.fixed_height(1))
+            .child(update_note)
             // main content
             .child(
                 LinearLayout::horizontal()
